@@ -13,8 +13,8 @@ import pinia from '../store'
 import type { App } from 'vue'
 
 export function registerPlugins (app: App) {
-  loadFonts()
-  app
-    .use(vuetify)
-    .use(pinia)
+    loadFonts()
+    app
+        .use(vuetify)
+        .use(pinia)
 }
