@@ -1,11 +1,23 @@
 <template>
   <v-app>
-    <v-snackbar
+    <v-dialog
+      id="loading-dialog"
       v-model="isLoading"
-      location="top"
+      :scrim="false"
+      persistent
+      width="auto"
     >
-      Loading...
-    </v-snackbar>
+      <v-card color="red">
+        <v-card-text>
+          Nalagam...
+          <v-progress-linear
+            indeterminate
+            color="white"
+            class="mb-0"
+          />
+        </v-card-text>
+      </v-card>
+    </v-dialog>
     <v-layout class="rounded rounded-md">
       <v-app-bar
         elevation="2"
@@ -61,3 +73,10 @@ function toggleTheme () {
     theme.global.name.value = theme.global.current.value.dark ? 'lightTheme' : 'darkTheme'
 }
 </script>
+
+<style>
+#loading-dialog .v-overlay__content {
+    position: absolute;
+    top: 50px;
+}
+</style>
