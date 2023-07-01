@@ -1,14 +1,14 @@
 <template>
-    <div class="wrapper">
-        <v-expansion-panels>
-            <v-expansion-panel
-                v-for="event in events"
-                :key="event.id"
-                :title="getEventTitle(event)"
-                :text="event.description"
-            />
-        </v-expansion-panels>
-    </div>
+  <div class="wrapper">
+    <v-expansion-panels>
+      <v-expansion-panel
+        v-for="event in events"
+        :key="event.id"
+        :title="getEventTitle(event)"
+        :text="event.description"
+      />
+    </v-expansion-panels>
+  </div>
 </template>
 
 <script setup lang="ts">
