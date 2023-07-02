@@ -5,15 +5,20 @@
     :map-style="mapStyle"
     :center="[14.8, 46.15]"
     :zoom="8"
-    :min-zoom="7"
-    :max-zoom="14"
+    :min-zoom="1"
+    :max-zoom="16"
   >
     <map-icon
       v-for="event in events"
       :key="event.id"
       :event="event"
     />
-    <MapboxGeolocateControl :show-accuracy-circle="false" />
+    <MapboxGeolocateControl
+      ref="geolocate"
+      :show-accuracy-circle="false"
+      @mb-geolocate="storeUserLocation"
+      @mb-error="locationLoadError"
+    />
     <MapboxNavigationControl position="bottom-right" />
   </MapboxMap>
 </template>
@@ -21,10 +26,10 @@
 <script setup lang="ts">
 // @ts-ignore-next-line
 import { MapboxMap, MapboxGeolocateControl, MapboxNavigationControl } from '@studiometa/vue-mapbox-gl'
-import { useTheme } from 'vuetify'
 import 'mapbox-gl/dist/mapbox-gl.css'
-import { computed } from 'vue'
-import { useEventsStore } from '@/store'
+import { useTheme } from 'vuetify'
+import { computed, ref } from 'vue'
+import { useEventsStore, useMapStore } from '@/store'
 import MapIcon from '@/components/map/MapIcon.vue'
 const accessToken = import.meta.env.VITE_MAPBOX_KEY
 
@@ -36,4 +41,26 @@ const mapStyle = computed(() => theme.current.value.dark === true ? mapStyleDark
 
 const eventsStore = useEventsStore()
 const events = computed(() => eventsStore.events)
+
+const mapStore = useMapStore()
+
+const geolocate = ref<any>(null)
+function triggerLocationFind () {
+    if (geolocate.value && geolocate.value.control) {
+        geolocate.value.control.trigger()
+    } else {
+        console.error('Cannot manually trigger locating!')
+    }
+}
+
+function storeUserLocation (e: any): void {
+    if (e && e.coords && e.coords.latitude && e.coords.longitude) {
+        mapStore.userLocation = [e.coords.latitude, e.coords.longitude]
+    }
+}
+
+function locationLoadError (): void {
+    mapStore.userLocation = null
+    console.error('Could not load user location!')
+}
 </script>
