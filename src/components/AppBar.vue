@@ -5,7 +5,10 @@
   >
     <template #append>
       <v-btn icon="mdi-refresh" />
-      <v-btn icon>
+      <v-btn
+        icon
+        @click="onLocationBtnClick"
+      >
         <v-badge
           :color="locationBadgeColor"
           dot
@@ -27,12 +30,18 @@ import { useTheme } from 'vuetify'
 import { useMapStore } from '@/store'
 import { computed } from 'vue'
 
-const hasUserLocation = computed(() => useMapStore().hasUserLocation)
+const mapStore = useMapStore()
+
+const hasUserLocation = computed(() => mapStore.hasUserLocation)
 const locationIcon = computed(() => hasUserLocation.value ? 'mdi-map-marker' : 'mdi-map-marker-alert')
 const locationBadgeColor = computed(() => hasUserLocation.value ? 'green' : 'red')
 
 const theme = useTheme()
 function toggleTheme () {
     theme.global.name.value = theme.global.current.value.dark ? 'lightTheme' : 'darkTheme'
+}
+
+function onLocationBtnClick () {
+    mapStore.getUserLocation()
 }
 </script>

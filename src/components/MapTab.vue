@@ -43,6 +43,7 @@ const eventsStore = useEventsStore()
 const events = computed(() => eventsStore.events)
 
 const mapStore = useMapStore()
+mapStore.getUserLocationCb = triggerLocationFind
 
 const geolocate = ref<any>(null)
 function triggerLocationFind () {

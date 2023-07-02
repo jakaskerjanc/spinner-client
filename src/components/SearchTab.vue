@@ -24,30 +24,31 @@
       :items="eventTypes"
       multiple
     />
+    <div class="switch-container">
+      <v-switch
+        :model-value="searchStore.isOnGoing"
+        label="V trajanju"
+        @update:model-value="onOnGoingChange"
+      />
+      <v-switch
+        v-model="searchStore.includeWithoutDescription"
+        label="Dogodki brez opisa"
+      />
+    </div>
     <v-switch
-      v-model="searchStore.isOnGoing"
-      label="V trajanju"
+      :model-value="searchStore.isOrderByDistance"
+      label="Išči po razdalji"
+      @update:model-value="onOrderByDistanceChange"
     />
-    <v-radio-group v-model="searchStore.order">
-      <v-radio
-        label="ASC"
-        value="asc"
-      />
-      <v-radio
-        label="DESC"
-        value="desc"
-      />
-    </v-radio-group>
-    <v-radio-group v-model="searchStore.orderBy">
-      <v-radio
-        label="Datum"
-        value="date"
-      />
-      <v-radio
-        label="Lokacija"
-        value="location"
-      />
-    </v-radio-group>
+    <v-slider
+      v-if="searchStore.isOrderByDistance"
+      v-model="searchStore.distance"
+      :max="100"
+      :min="1"
+      step="1"
+      thumb-label="always"
+      prepend-icon="mdi-map-marker"
+    />
     <v-text-field
       v-model="searchStore.startDate"
       type="date"
@@ -56,21 +57,39 @@
       v-model="searchStore.endDate"
       type="date"
     />
-    <v-btn @click="searchStore.search">
+    <v-btn
+      color="red"
+      @click="searchStore.search"
+    >
       Išči
     </v-btn>
   </div>
 </template>
 
 <script setup lang="ts">
-import { useEventsStore, useSearchStore } from '@/store'
+import { useEventsStore, useMapStore, useSearchStore } from '@/store'
 import { computed } from 'vue'
 
 const eventsStore = useEventsStore()
+const searchStore = useSearchStore()
+const mapStore = useMapStore()
+
 const municipalities = computed(() => eventsStore.municipalities.map(m => { return { title: m.name, value: m.id } }))
 const eventTypes = computed(() => eventsStore.eventTypes.map(m => { return { title: m.name, value: m.id } }))
 
-const searchStore = useSearchStore()
+function onOnGoingChange (newValue: boolean) {
+    if (newValue) {
+        searchStore.includeWithoutDescription = true
+    }
+    searchStore.isOnGoing = newValue
+}
+
+function onOrderByDistanceChange (newValue: boolean) {
+    if (newValue) {
+        mapStore.getUserLocation()
+    }
+    searchStore.isOrderByDistance = newValue
+}
 </script>
 
 <style scoped>
@@ -85,8 +104,20 @@ const searchStore = useSearchStore()
 
 .v-input {
     max-width: 500px;
-    width: 50%;
+    width: 80%;
     min-width: 200px;
 }
 
+.switch-container {
+    display: flex;
+    flex-wrap: wrap;
+    max-width: 500px;
+    width: 80%;
+    min-width: 200px;
+
+}
+
+.switch-container .v-input {
+    width: 50%;
+}
 </style>
