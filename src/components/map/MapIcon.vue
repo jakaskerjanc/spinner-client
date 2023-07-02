@@ -50,7 +50,9 @@ function getColor (event: Event) {
 
     const createTimeDate = new Date(event.createTime)
     const diff = currentTime.getTime() - createTimeDate.getTime()
-    const ratio = (diff % 86400000) / 86400000
+    const ratio = diff >= 86400000
+        ? 1
+        : (diff % 86400000) / 86400000
 
     return '#' + mixColors(ratio)
 }
