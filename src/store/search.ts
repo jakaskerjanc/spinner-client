@@ -7,9 +7,7 @@ type State = {
     title: string
     selectedEventTypeIds: number[]
     selectedMunicipalityIds: number[]
-    isOnGoing: boolean
-    // order: 'asc' | 'desc'
-    // orderBy: 'date' | 'distance'
+    includeOnGoing: boolean
     distance: number
     startDate: string
     endDate: string
@@ -23,9 +21,7 @@ export const useSearchStore = defineStore('search', {
         title: '',
         selectedEventTypeIds: [],
         selectedMunicipalityIds: [],
-        isOnGoing: false,
-        // order: 'desc',
-        // orderBy: 'date',
+        includeOnGoing: false,
         distance: 1,
         startDate: DateTime.now().minus({ day: 1 }).toISODate(),
         endDate: DateTime.now().toISODate(),
@@ -37,22 +33,39 @@ export const useSearchStore = defineStore('search', {
             const eventsStore = useEventsStore()
             const mapStore = useMapStore()
 
+            // 😅
+            const lat = this.isOrderByDistance
+                ? mapStore.selectedLocation
+                    ? mapStore.selectedLocation[1]
+                    : mapStore.userLocation
+                        ? mapStore.userLocation[0]
+                        : undefined
+                : undefined
+
+            const lon = this.isOrderByDistance
+                ? mapStore.selectedLocation
+                    ? mapStore.selectedLocation[0]
+                    : mapStore.userLocation
+                        ? mapStore.userLocation[1]
+                        : undefined
+                : undefined
+
             const query = {
                 description: this.description ? this.description : undefined,
                 title: this.title ? this.title : undefined,
                 eventTypeId: this.selectedEventTypeIds.length ? this.selectedEventTypeIds : undefined,
                 municipalityId: this.selectedMunicipalityIds.length ? this.selectedMunicipalityIds : undefined,
-                onGoing: this.isOnGoing,
-                // order: this.order,
+                includeOnGoing: this.includeOnGoing,
                 orderBy: this.isOrderByDistance ? 'distance' : 'date',
                 distance: this.distance,
-                lat: this.isOrderByDistance && mapStore.userLocation ? mapStore.userLocation[0] : undefined,
-                lon: this.isOrderByDistance && mapStore.userLocation ? mapStore.userLocation[1] : undefined,
-                count: 150,
+                lat,
+                lon,
+                count: 50,
                 createTimeFrom: this.startDate ? this.startDate : undefined,
                 createTimeTo: this.endDate ? this.endDate : undefined,
                 includeWithoutDescription: this.includeWithoutDescription
             }
+
             useAppStore().loading = true
             await eventsStore.fetchEvents(query)
             useAppStore().loading = false

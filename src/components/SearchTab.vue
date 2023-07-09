@@ -26,20 +26,30 @@
     />
     <div class="switch-container">
       <v-switch
-        :model-value="searchStore.isOnGoing"
+        :model-value="searchStore.includeOnGoing"
         label="V trajanju"
+        hide-details
         @update:model-value="onOnGoingChange"
       />
       <v-switch
         v-model="searchStore.includeWithoutDescription"
         label="Dogodki brez opisa"
+        hide-details
       />
+      <v-switch
+        :model-value="searchStore.isOrderByDistance"
+        label="Išči po razdalji"
+        hide-details
+        @update:model-value="onOrderByDistanceChange"
+      />
+      <v-btn
+        v-if="searchStore.isOrderByDistance"
+        prepend-icon="mdi-map-marker"
+        @click="enterMapSelectMode"
+      >
+        Izberi lokacijo
+      </v-btn>
     </div>
-    <v-switch
-      :model-value="searchStore.isOrderByDistance"
-      label="Išči po razdalji"
-      @update:model-value="onOrderByDistanceChange"
-    />
     <v-slider
       v-if="searchStore.isOrderByDistance"
       v-model="searchStore.distance"
@@ -52,10 +62,12 @@
     <v-text-field
       v-model="searchStore.startDate"
       type="date"
+      clearable
     />
     <v-text-field
       v-model="searchStore.endDate"
       type="date"
+      clearable
     />
     <v-btn
       color="red"
@@ -67,7 +79,7 @@
 </template>
 
 <script setup lang="ts">
-import { useEventsStore, useMapStore, useSearchStore } from '@/store'
+import { useAppStore, useEventsStore, useMapStore, useSearchStore } from '@/store'
 import { computed } from 'vue'
 
 const eventsStore = useEventsStore()
@@ -81,7 +93,7 @@ function onOnGoingChange (newValue: boolean) {
     if (newValue) {
         searchStore.includeWithoutDescription = true
     }
-    searchStore.isOnGoing = newValue
+    searchStore.includeOnGoing = newValue
 }
 
 function onOrderByDistanceChange (newValue: boolean) {
@@ -89,6 +101,11 @@ function onOrderByDistanceChange (newValue: boolean) {
         mapStore.getUserLocation()
     }
     searchStore.isOrderByDistance = newValue
+}
+
+function enterMapSelectMode () {
+    mapStore.isInSelectMode = true
+    useAppStore().tab = 'map'
 }
 </script>
 
@@ -111,13 +128,15 @@ function onOrderByDistanceChange (newValue: boolean) {
 .switch-container {
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     max-width: 500px;
     width: 80%;
     min-width: 200px;
+    padding-bottom: 20px;
 
 }
 
-.switch-container .v-input {
+.switch-container .v-input, .switch-container .v-btn {
     width: 50%;
 }
 </style>
