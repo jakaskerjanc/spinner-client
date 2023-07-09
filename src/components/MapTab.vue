@@ -1,5 +1,6 @@
 <template>
   <MapboxMap
+    id="map"
     style="height: calc(100vh - 120px)"
     :access-token="accessToken"
     :map-style="mapStyle"
@@ -15,8 +16,8 @@
       :event="event"
     />
     <MapboxMarker
-      v-if="mapStore.hasSelectedLocation"
-      :lng-lat="mapStore.selectedLocation"
+      v-if="mapStore.selectedLocation && mapStore.effectiveLocationAsArray"
+      :lng-lat="mapStore.effectiveLocationAsArray"
     />
     <MapboxGeolocateControl
       ref="geolocate"
@@ -25,17 +26,38 @@
       @mb-error="locationLoadError"
     />
     <MapboxNavigationControl position="bottom-right" />
+    <template v-if="searchStore.isOrderByDistance">
+      <MapboxSource
+        id="locationSearchRadius"
+        :options="sourceObj"
+      />
+      <MapboxSource
+        id="locationSearchRadiusLine"
+        :options="sourceObj2"
+      />
+      <MapboxLayer
+        id="layer"
+        :options="layerObj"
+      />
+      <MapboxLayer
+        id="layer2"
+        :options="layerObj2"
+      />
+    </template>
   </MapboxMap>
 </template>
 
 <script setup lang="ts">
 // @ts-ignore-next-line
-import { MapboxMap, MapboxGeolocateControl, MapboxNavigationControl, MapboxMarker } from '@studiometa/vue-mapbox-gl'
+import { MapboxMap, MapboxGeolocateControl, MapboxNavigationControl, MapboxMarker, MapboxLayer, MapboxSource } from '@studiometa/vue-mapbox-gl'
 import 'mapbox-gl/dist/mapbox-gl.css'
 import { useTheme } from 'vuetify'
 import { computed, ref } from 'vue'
-import { useEventsStore, useMapStore } from '@/store'
+import { useEventsStore, useMapStore, useSearchStore } from '@/store'
 import MapIcon from '@/components/map/MapIcon.vue'
+import turfCircle from '@turf/circle'
+import { lineString as turfLineString } from '@turf/helpers'
+
 const accessToken = import.meta.env.VITE_MAPBOX_KEY
 
 const mapStyleLight = 'mapbox://styles/mapbox/streets-v11'
@@ -61,7 +83,7 @@ function triggerLocationFind () {
 
 function storeUserLocation (e: any): void {
     if (e && e.coords && e.coords.latitude && e.coords.longitude) {
-        mapStore.userLocation = [e.coords.latitude, e.coords.longitude]
+        mapStore.userLocation = { lat: e.coords.latitude, lng: e.coords.longitude }
     }
 }
 
@@ -72,8 +94,68 @@ function locationLoadError (): void {
 
 function onMapClick (e: any) {
     if (mapStore.isInSelectMode) {
-        mapStore.selectedLocation = [e.lngLat.lng, e.lngLat.lat]
+        mapStore.selectedLocation = { lat: e.lngLat.lat, lng: e.lngLat.lng }
         mapStore.isInSelectMode = false
+    }
+}
+
+const searchStore = useSearchStore()
+const circle = computed(() => {
+    if (mapStore.effectiveLocationAsArray) {
+        const center = mapStore.effectiveLocationAsArray
+        const radius = searchStore.distance
+        return turfCircle(center, radius, { steps: 50, units: 'kilometers' })
+    }
+    return null
+})
+const lineString = computed(() => {
+    if (circle.value !== null) {
+        // @ts-ignore-next-line
+        return turfLineString(...circle.value.geometry.coordinates)
+    }
+    return null
+})
+
+const sourceObj = computed(() => {
+    if (circle.value) {
+        return {
+            type: 'geojson',
+            data: {
+                ...circle.value
+            }
+        }
+    }
+    return null
+})
+const sourceObj2 = computed(() => {
+    if (circle.value) {
+        return {
+            type: 'geojson',
+            data: {
+                ...lineString.value
+            }
+        }
+    }
+    return null
+})
+
+const layerObj = {
+    id: 'layerId',
+    source: 'locationSearchRadius',
+    type: 'fill',
+    paint: {
+        'fill-color': '#0062ff',
+        'fill-opacity': 0.25,
+        'fill-outline-color': 'blue'
+    }
+}
+const layerObj2 = {
+    id: 'layerId',
+    source: 'locationSearchRadiusLine',
+    type: 'line',
+    paint: {
+        'line-color': 'blue',
+        'line-width': 1
     }
 }
 </script>

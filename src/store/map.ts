@@ -1,10 +1,10 @@
 import { defineStore } from 'pinia'
 
 type State = {
-    userLocation: null | [number, number]
+    userLocation: null | { lat: number, lng: number }
     getUserLocationCb: null | (() => void)
     isInSelectMode: boolean
-    selectedLocation: null | [number, number]
+    selectedLocation: null | { lat: number, lng: number }
 }
 
 export const useMapStore = defineStore('map', {
@@ -16,7 +16,12 @@ export const useMapStore = defineStore('map', {
     }),
     getters: {
         hasUserLocation: (state) => state.userLocation !== null,
-        hasSelectedLocation: (state) => state.selectedLocation !== null
+        hasSelectedLocation: (state) => state.selectedLocation !== null,
+        effectiveLocation: (state) => state.selectedLocation || state.userLocation,
+        effectiveLocationAsArray (): [number, number] | null {
+            const location = this.effectiveLocation
+            return location ? [location.lng, location.lat] : null
+        }
     },
     actions: {
         getUserLocation () {

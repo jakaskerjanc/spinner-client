@@ -33,23 +33,6 @@ export const useSearchStore = defineStore('search', {
             const eventsStore = useEventsStore()
             const mapStore = useMapStore()
 
-            // 😅
-            const lat = this.isOrderByDistance
-                ? mapStore.selectedLocation
-                    ? mapStore.selectedLocation[1]
-                    : mapStore.userLocation
-                        ? mapStore.userLocation[0]
-                        : undefined
-                : undefined
-
-            const lon = this.isOrderByDistance
-                ? mapStore.selectedLocation
-                    ? mapStore.selectedLocation[0]
-                    : mapStore.userLocation
-                        ? mapStore.userLocation[1]
-                        : undefined
-                : undefined
-
             const query = {
                 description: this.description ? this.description : undefined,
                 title: this.title ? this.title : undefined,
@@ -58,8 +41,8 @@ export const useSearchStore = defineStore('search', {
                 includeOnGoing: this.includeOnGoing,
                 orderBy: this.isOrderByDistance ? 'distance' : 'date',
                 distance: this.distance,
-                lat,
-                lon,
+                lat: mapStore.effectiveLocation?.lat,
+                lon: mapStore.effectiveLocation?.lng,
                 count: 50,
                 createTimeFrom: this.startDate ? this.startDate : undefined,
                 createTimeTo: this.endDate ? this.endDate : undefined,
