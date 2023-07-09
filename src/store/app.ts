@@ -1,7 +1,13 @@
 import { defineStore } from 'pinia'
 
+type State = {
+    loading: boolean
+    tab: string
+}
+
 export const useAppStore = defineStore('app', {
-    state: () => ({
-        loading: false
+    state: (): State => ({
+        loading: false,
+        tab: 'map'
     })
 })

@@ -21,7 +21,7 @@
     <v-layout class="rounded rounded-md">
       <app-bar />
       <v-main class="main">
-        <v-window v-model="activeTab">
+        <v-window :model-value="appStore.tab">
           <v-window-item value="map">
             <map-tab />
           </v-window-item>
@@ -33,7 +33,10 @@
           </v-window-item>
         </v-window>
       </v-main>
-      <bottom-navigation v-model:active-tab="activeTab" />
+      <bottom-navigation
+        v-model:active-tab="appStore.tab"
+        @update:model-value="onUpdateAciveTab"
+      />
     </v-layout>
   </v-app>
 </template>
@@ -44,15 +47,21 @@ import SearchTab from './components/SearchTab.vue'
 import ListTab from './components/ListTab.vue'
 import MapTab from './components/MapTab.vue'
 import AppBar from './components/AppBar.vue'
-import { computed, ref } from 'vue'
+import { computed, onBeforeMount } from 'vue'
 import { useEventsStore, useAppStore } from './store'
 
-const activeTab = ref('map')
-
 const eventsStore = useEventsStore()
-eventsStore.fetchAll()
+const appStore = useAppStore()
 
-const isLoading = computed(() => useAppStore().loading)
+const isLoading = computed(() => appStore.loading)
+
+onBeforeMount(() => {
+    eventsStore.fetchAll()
+})
+
+function onUpdateAciveTab (newValue: string) {
+    appStore.tab = newValue
+}
 </script>
 
 <style>
