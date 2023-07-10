@@ -1,7 +1,7 @@
 <template>
   <MapboxMap
     id="map"
-    style="height: calc(100vh - 120px)"
+    style="height: 100%; width: 100%;"
     :access-token="accessToken"
     :map-style="mapStyle"
     :center="[14.8, 46.15]"

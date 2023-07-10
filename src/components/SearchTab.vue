@@ -89,14 +89,14 @@ const mapStore = useMapStore()
 const municipalities = computed(() => eventsStore.municipalities.map(m => { return { title: m.name, value: m.id } }))
 const eventTypes = computed(() => eventsStore.eventTypes.map(m => { return { title: m.name, value: m.id } }))
 
-function onOnGoingChange (newValue: boolean) {
+function onOnGoingChange (newValue: any) {
     if (newValue) {
         searchStore.includeWithoutDescription = true
     }
     searchStore.includeOnGoing = newValue
 }
 
-function onOrderByDistanceChange (newValue: boolean) {
+function onOrderByDistanceChange (newValue: any) {
     if (newValue) {
         mapStore.getUserLocation()
     }
@@ -116,7 +116,6 @@ function enterMapSelectMode () {
     flex-direction: column;
     align-items: center;
     overflow-y: scroll;
-    max-height: calc(100vh - 120px);
 }
 
 .v-input {

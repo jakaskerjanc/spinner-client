@@ -1,6 +1,6 @@
 <template>
   <div class="wrapper">
-    <v-expansion-panels>
+    <v-expansion-panels v-if="events.length">
       <v-expansion-panel
         v-for="event in events"
         :key="event.id"
@@ -8,6 +8,9 @@
         :text="event.description"
       />
     </v-expansion-panels>
+    <div v-else>
+      Ni rezultatov
+    </div>
   </div>
 </template>
 
@@ -24,6 +27,5 @@ const getEventTitle = (event: any) => (new Date(Date.parse(event.createTime))).t
 .wrapper {
     padding: 16px;
     overflow-y: scroll;
-    max-height: calc(100vh - 120px);
 }
 </style>
