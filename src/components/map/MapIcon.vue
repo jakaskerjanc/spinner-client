@@ -4,8 +4,10 @@
     :lng-lat="[event.lon, event.lat]"
   >
     <v-btn
+      :size="useMapStore().selectedEventId === event.id ? 'large' : 'default'"
       :icon="getIconName(event.eventType.id)"
       :color="getColor(event)"
+      @click="setSelectedEvent(event.id)"
     />
   </MapboxMarker>
 </template>
@@ -14,33 +16,10 @@
 // @ts-ignore-next-line
 import { MapboxMarker } from '@studiometa/vue-mapbox-gl'
 import { Event } from '@/types'
+import { useMapStore } from '@/store'
+import { getIconName } from '@/util'
 
 defineProps<{event: Event}>()
-
-function getIconName (eventTypeId: Event['eventType']['id']) {
-    switch (eventTypeId) {
-    case 1:
-        return 'mdi-fire'
-    case 2:
-        return 'mdi-car'
-    case 3:
-        return 'mdi-wrench'
-    case 4:
-        return 'mdi-home-lightning-bolt'
-    case 5:
-        return 'mdi-wrench'
-    case 6:
-        return 'mdi-wrench'
-    case 7:
-        return 'mdi-bomb'
-    case 8:
-        return 'mdi-wrench'
-    case 9:
-        return 'mdi-virus'
-    case 10:
-        return 'mdi-radioactive'
-    }
-}
 
 const currentTime = new Date()
 function getColor (event: Event) {
@@ -70,5 +49,9 @@ function mixColors (ratio: number) {
     const b = Math.ceil(colorTo.b * ratio + colorFrom.b * (1 - ratio))
 
     return hex(r) + hex(g) + hex(b)
+}
+
+function setSelectedEvent (id: number) {
+    useMapStore().selectedEventId = id
 }
 </script>

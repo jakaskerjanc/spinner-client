@@ -22,7 +22,6 @@
       @mb-error="locationLoadError"
     />
     <MapboxNavigationControl position="bottom-right" />
-
     <template v-if="searchStore.isOrderByDistance && mapStore.effectiveLocationAsArray">
       <MapboxMarker
         v-if="mapStore.selectedLocation"
@@ -46,6 +45,7 @@
       />
     </template>
   </MapboxMap>
+  <event-popup />
 </template>
 
 <script setup lang="ts">
@@ -56,6 +56,7 @@ import { useTheme } from 'vuetify'
 import { computed, ref } from 'vue'
 import { useEventsStore, useMapStore, useSearchStore } from '@/store'
 import MapIcon from '@/components/map/MapIcon.vue'
+import EventPopup from '@/components/EventPopup.vue'
 import turfCircle from '@turf/circle'
 import { lineString as turfLineString } from '@turf/helpers'
 
