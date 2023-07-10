@@ -26,7 +26,7 @@
       @mb-error="locationLoadError"
     />
     <MapboxNavigationControl position="bottom-right" />
-    <template v-if="searchStore.isOrderByDistance">
+    <template v-if="searchStore.isOrderByDistance && mapStore.effectiveLocation">
       <MapboxSource
         id="locationSearchRadius"
         :options="sourceObj"
