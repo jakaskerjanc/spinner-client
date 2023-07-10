@@ -15,10 +15,6 @@
       :key="event.id"
       :event="event"
     />
-    <MapboxMarker
-      v-if="mapStore.selectedLocation && mapStore.effectiveLocationAsArray"
-      :lng-lat="mapStore.effectiveLocationAsArray"
-    />
     <MapboxGeolocateControl
       ref="geolocate"
       :show-accuracy-circle="false"
@@ -26,7 +22,12 @@
       @mb-error="locationLoadError"
     />
     <MapboxNavigationControl position="bottom-right" />
-    <template v-if="searchStore.isOrderByDistance && mapStore.effectiveLocation">
+
+    <template v-if="searchStore.isOrderByDistance && mapStore.effectiveLocationAsArray">
+      <MapboxMarker
+        v-if="mapStore.selectedLocation"
+        :lng-lat="mapStore.effectiveLocationAsArray"
+      />
       <MapboxSource
         id="locationSearchRadius"
         :options="sourceObj"
