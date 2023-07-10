@@ -1,7 +1,13 @@
 <template>
   <v-main>
-    <v-window :model-value="useAppStore().tab">
-      <v-window-item value="map">
+    <v-window
+      :model-value="useAppStore().tab"
+      height="100%"
+    >
+      <v-window-item
+        value="map"
+        height="100%"
+      >
         <map-tab />
       </v-window-item>
       <v-window-item value="list">
@@ -29,3 +35,9 @@ function onUpdateAciveTab (newValue: string) {
     useAppStore().tab = newValue
 }
 </script>
+
+<style scoped>
+.v-window, .v-window-item {
+  height: 100%;
+}
+</style>
