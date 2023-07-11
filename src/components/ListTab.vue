@@ -7,7 +7,7 @@
       v-for="event in events"
       :key="event.id"
       :event="event"
-      @click="setSelectedEvent(event.id)"
+      @click="useMapStore().setSelectedEventId(event.id)"
     />
   </div>
   <div
@@ -24,15 +24,4 @@ import { computed } from 'vue'
 import EventCard from '@/components/EventCard.vue'
 
 const events = computed(() => useEventsStore().events)
-
-function setSelectedEvent (id: number) {
-    useMapStore().selectedEventId = id
-}
 </script>
-
-<style scoped>
-.wrapper {
-    padding: 16px;
-    overflow-y: scroll;
-}
-</style>

@@ -12,6 +12,7 @@
     <event-card
       v-if="selectedEvent"
       :event="selectedEvent"
+      @click="closeEventPopup"
     />
   </v-bottom-sheet>
 </template>
@@ -19,7 +20,7 @@
 <script setup lang="ts">
 import EventCard from '@/components/EventCard.vue'
 import { VBottomSheet } from 'vuetify/labs/VBottomSheet'
-import { computed, ref } from 'vue'
+import { computed, ref, watch, nextTick } from 'vue'
 import { useEventsStore, useMapStore } from '@/store'
 import { useDisplay } from 'vuetify'
 
@@ -34,6 +35,18 @@ const selectedEvent = computed(() => {
     const events = useEventsStore().events
     return events.find((event) => event.id === selectedEventId.value)
 })
+
+watch(selectedEventId, async (id) => {
+    await nextTick()
+    if (id) {
+        sheet.value = true
+    }
+})
+
+function closeEventPopup () {
+    sheet.value = false
+    mapStore.setSelectedEventId(null)
+}
 </script>
 
 <style>

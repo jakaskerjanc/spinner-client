@@ -7,7 +7,7 @@
       :size="useMapStore().selectedEventId === event.id ? 'large' : 'default'"
       :icon="getIconName(event.eventType.id)"
       :color="getColor(event)"
-      @click="setSelectedEvent(event.id)"
+      @click="useMapStore().setSelectedEventId(event.id)"
     />
   </MapboxMarker>
 </template>
@@ -49,9 +49,5 @@ function mixColors (ratio: number) {
     const b = Math.ceil(colorTo.b * ratio + colorFrom.b * (1 - ratio))
 
     return hex(r) + hex(g) + hex(b)
-}
-
-function setSelectedEvent (id: number) {
-    useMapStore().selectedEventId = id
 }
 </script>

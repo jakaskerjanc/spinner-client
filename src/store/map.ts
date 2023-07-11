@@ -30,6 +30,9 @@ export const useMapStore = defineStore('map', {
             if (!this.hasUserLocation && this.getUserLocationCb) {
                 this.getUserLocationCb()
             }
+        },
+        setSelectedEventId (eventId: number | null) {
+            this.selectedEventId = eventId
         }
     }
 })
