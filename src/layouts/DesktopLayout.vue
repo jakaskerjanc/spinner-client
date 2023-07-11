@@ -1,23 +1,25 @@
 <template>
   <v-resize-drawer
-    v-model="leftDrawer"
+    v-model="leftDrawerOpen"
     location="left"
     :floating="drawerOptions.floating"
     :theme="drawerOptions.theme"
     :width="drawerOptions.width"
     :save-width="drawerOptions.saveWidth"
+    :min-width="drawerOptions.minWidth"
     @handle:dblclick="handleLeftDrawerEvent"
     @handle:drag="handleLeftDrawerEvent"
   >
     <search-tab />
   </v-resize-drawer>
   <v-resize-drawer
-    v-model="rightDrawer"
+    v-model="rightDrawerOpen"
     location="right"
     :floating="drawerOptions.floating"
     :theme="drawerOptions.theme"
     :width="drawerOptions.width"
     :save-width="drawerOptions.saveWidth"
+    :min-width="drawerOptions.minWidth"
     @handle:dblclick="handleRightDrawerEvent"
     @handle:drag="handleRightDrawerEvent"
   >
@@ -38,18 +40,22 @@ import ListTab from '@/components/ListTab.vue'
 import MapTab from '@/components/MapTab.vue'
 import { ref, computed } from 'vue'
 import { useDisplay, useTheme } from 'vuetify'
+import { useAppStore } from '@/store'
+
+const appStore = useAppStore()
 
 const currentTheme = computed(() => useTheme().current.value.dark === true ? 'darkTheme' : 'lightTheme')
 
-const leftDrawer = ref(true)
-const rightDrawer = ref(true)
+const leftDrawerOpen = computed(() => appStore.leftDrawerOpen)
+const rightDrawerOpen = computed(() => appStore.rightDrawerOpen)
 const leftDrawerOffset = ref('300px')
 const rightDrawerOffset = ref('300px')
 const drawerOptions = ref({
     floating: true,
     theme: currentTheme,
     width: '300px',
-    saveWidth: false
+    saveWidth: false,
+    minWidth: '250px'
 })
 const mainStyles = computed(() => {
     const { mobile } = useDisplay()
@@ -59,10 +65,10 @@ const mainStyles = computed(() => {
     if (mobile.value) {
         return ''
     }
-    if (!leftDrawer.value) {
+    if (!leftDrawerOpen.value) {
         leftPaddingValue = '0px'
     }
-    if (!rightDrawer.value) {
+    if (!rightDrawerOpen.value) {
         rightPaddingValue = '0px'
     }
 
