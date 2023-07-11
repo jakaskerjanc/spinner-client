@@ -1,3 +1,15 @@
+
+export type EventType = {
+    id: number;
+    name: string;
+}
+
+export type Municipality = {
+    id: number;
+    name: string;
+    MID: number;
+}
+
 export type Event = {
     id: number;
     lat: number;
@@ -7,12 +19,6 @@ export type Event = {
     reportTime: string;
     title: string | null;
     onGoing: boolean;
-    eventType: {
-        name: string;
-        id: number;
-    };
-    municipality: {
-        name: string;
-        id: number;
-    };
+    eventType: EventType;
+    municipality: Municipality
 }

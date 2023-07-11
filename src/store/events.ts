@@ -1,11 +1,12 @@
 import { defineStore } from 'pinia'
 import axios from '@/axios'
-import { useAppStore } from './app'
+import { useAppStore } from '@/store'
+import { Event, EventType, Municipality } from '@/types'
 
 type State = {
-    municipalities: any[]
-    eventTypes: any[]
-    events: any[]
+    municipalities: Municipality[]
+    eventTypes: EventType[]
+    events: Event[]
 }
 
 export const useEventsStore = defineStore('events', {
