@@ -1,26 +1,33 @@
 <template>
-  <div class="wrapper">
-    <v-expansion-panels v-if="events.length">
-      <v-expansion-panel
-        v-for="event in events"
-        :key="event.id"
-        :title="getEventTitle(event)"
-        :text="event.description"
-      />
-    </v-expansion-panels>
-    <div v-else>
-      Ni rezultatov
-    </div>
+  <div
+    v-if="events.length"
+    class="h-100 pa-4"
+  >
+    <event-card
+      v-for="event in events"
+      :key="event.id"
+      :event="event"
+      @click="setSelectedEvent(event.id)"
+    />
+  </div>
+  <div
+    v-else
+    class="h-100 pa-4 d-flex justify-center align-center"
+  >
+    Ni rezultatov
   </div>
 </template>
 
 <script setup lang="ts">
-import { useEventsStore } from '@/store'
+import { useEventsStore, useMapStore } from '@/store'
 import { computed } from 'vue'
+import EventCard from '@/components/EventCard.vue'
 
 const events = computed(() => useEventsStore().events)
 
-const getEventTitle = (event: any) => (new Date(Date.parse(event.createTime))).toLocaleString() + ' ' + (event.title ?? event.eventType.name)
+function setSelectedEvent (id: number) {
+    useMapStore().selectedEventId = id
+}
 </script>
 
 <style scoped>

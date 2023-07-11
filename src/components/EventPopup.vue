@@ -1,7 +1,7 @@
 <template>
   <v-bottom-sheet
     :id="mobile ? 'event-popup' : 'event-popup-desktop'"
-    v-model="sheet"
+    :model-value="sheet"
     :scrim="false"
     inset
     persistent
@@ -9,47 +9,30 @@
     position="bottom"
     offset="50px"
   >
-    <v-card
+    <event-card
       v-if="selectedEvent"
-      class="rounded-xl"
-    >
-      <v-card-item>
-        <div class="d-flex align-center justify-space-between">
-          <div>
-            <v-card-title style="text-wrap: wrap;">
-              {{ selectedEvent.title ?? selectedEvent.eventType.name }}
-            </v-card-title>
-            <v-card-subtitle> {{ getFormatedDateTime(selectedEvent.createTime) }}</v-card-subtitle>
-          </div>
-          <v-icon
-            size="x-large"
-            color="red"
-            :icon="getIconName(selectedEvent.eventType.id)"
-          />
-        </div>
-      </v-card-item>
-
-      <v-card-text>
-        {{ selectedEvent.description }}
-      </v-card-text>
-    </v-card>
+      :event="selectedEvent"
+    />
   </v-bottom-sheet>
 </template>
 
 <script setup lang="ts">
+import EventCard from '@/components/EventCard.vue'
 import { VBottomSheet } from 'vuetify/labs/VBottomSheet'
 import { computed, ref } from 'vue'
 import { useEventsStore, useMapStore } from '@/store'
-import { getIconName, getFormatedDateTime } from '@/util'
 import { useDisplay } from 'vuetify'
 
 const { mobile } = useDisplay()
+const mapStore = useMapStore()
 
 const sheet = ref(true)
+const selectedEventId = computed(() => mapStore.selectedEventId)
+
 const selectedEvent = computed(() => {
-    if (!useMapStore().selectedEventId) return null
+    if (!selectedEventId.value) return null
     const events = useEventsStore().events
-    return events.find((event) => event.id === useMapStore().selectedEventId)
+    return events.find((event) => event.id === selectedEventId.value)
 })
 </script>
 

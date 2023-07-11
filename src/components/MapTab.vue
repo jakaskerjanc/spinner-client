@@ -4,11 +4,13 @@
     style="height: 100%; width: 100%;"
     :access-token="accessToken"
     :map-style="mapStyle"
-    :center="[14.8, 46.15]"
+    :center="mapCenter"
+    :bounds="[[16.57636, 46.87560], [13.38844, 45.42962]]"
     :zoom="8"
     :min-zoom="1"
     :max-zoom="16"
     @mb-click="onMapClick"
+    @mb-created="(mapInstance: Map) => map = mapInstance"
   >
     <map-icon
       v-for="event in events"
@@ -29,51 +31,70 @@
       />
       <MapboxSource
         id="locationSearchRadius"
-        :options="sourceObj"
+        :options="circleGeojson"
       />
       <MapboxSource
         id="locationSearchRadiusLine"
-        :options="sourceObj2"
+        :options="lineGeojson"
       />
       <MapboxLayer
-        id="layer"
-        :options="layerObj"
+        id="circleLayer"
+        :options="circleStyle"
       />
       <MapboxLayer
-        id="layer2"
-        :options="layerObj2"
+        id="lineLayer"
+        :options="lineStyle"
       />
     </template>
   </MapboxMap>
-  <event-popup />
+  <event-popup v-if="renderEventPopup" />
 </template>
 
 <script setup lang="ts">
 // @ts-ignore-next-line
 import { MapboxMap, MapboxGeolocateControl, MapboxNavigationControl, MapboxMarker, MapboxLayer, MapboxSource } from '@studiometa/vue-mapbox-gl'
 import 'mapbox-gl/dist/mapbox-gl.css'
-import { useTheme } from 'vuetify'
-import { computed, ref } from 'vue'
-import { useEventsStore, useMapStore, useSearchStore } from '@/store'
+import { useTheme, useDisplay } from 'vuetify'
+import { computed, ref, watch } from 'vue'
+import { useAppStore, useEventsStore, useMapStore, useSearchStore } from '@/store'
 import MapIcon from '@/components/map/MapIcon.vue'
 import EventPopup from '@/components/EventPopup.vue'
 import turfCircle from '@turf/circle'
 import { lineString as turfLineString } from '@turf/helpers'
+import { Map } from 'mapbox-gl'
 
 const accessToken = import.meta.env.VITE_MAPBOX_KEY
 
+const theme = useTheme()
+const { mobile } = useDisplay()
+
 const mapStyleLight = 'mapbox://styles/mapbox/streets-v11'
 const mapStyleDark = 'mapbox://styles/mapbox/dark-v11'
-
-const theme = useTheme()
 const mapStyle = computed(() => theme.current.value.dark === true ? mapStyleDark : mapStyleLight)
 
+const searchStore = useSearchStore()
 const eventsStore = useEventsStore()
+const mapStore = useMapStore()
+const appStore = useAppStore()
+
 const events = computed(() => eventsStore.events)
 
-const mapStore = useMapStore()
-mapStore.getUserLocationCb = triggerLocationFind
+const renderEventPopup = computed(() => !mobile.value || appStore.tab === 'map')
 
+const mapCenter = ref([14.8, 46.15])
+
+const map = ref<Map | null>(null)
+watch(() => mapStore.selectedEventId, (id) => {
+    const event = events.value.find((event) => event.id === id)
+    if (event && map.value !== null) {
+        map.value.flyTo({
+            center: [event.lon, event.lat],
+            zoom: 11
+        })
+    }
+})
+
+mapStore.getUserLocationCb = triggerLocationFind
 const geolocate = ref<any>(null)
 function triggerLocationFind () {
     if (geolocate.value && geolocate.value.control) {
@@ -101,7 +122,6 @@ function onMapClick (e: any) {
     }
 }
 
-const searchStore = useSearchStore()
 const circle = computed(() => {
     if (mapStore.effectiveLocationAsArray) {
         const center = mapStore.effectiveLocationAsArray
@@ -110,6 +130,7 @@ const circle = computed(() => {
     }
     return null
 })
+
 const lineString = computed(() => {
     if (circle.value !== null) {
         // @ts-ignore-next-line
@@ -118,7 +139,7 @@ const lineString = computed(() => {
     return null
 })
 
-const sourceObj = computed(() => {
+const circleGeojson = computed(() => {
     if (circle.value) {
         return {
             type: 'geojson',
@@ -129,7 +150,8 @@ const sourceObj = computed(() => {
     }
     return null
 })
-const sourceObj2 = computed(() => {
+
+const lineGeojson = computed(() => {
     if (circle.value) {
         return {
             type: 'geojson',
@@ -141,7 +163,7 @@ const sourceObj2 = computed(() => {
     return null
 })
 
-const layerObj = {
+const circleStyle = {
     id: 'layerId',
     source: 'locationSearchRadius',
     type: 'fill',
@@ -151,7 +173,8 @@ const layerObj = {
         'fill-outline-color': 'blue'
     }
 }
-const layerObj2 = {
+
+const lineStyle = {
     id: 'layerId',
     source: 'locationSearchRadiusLine',
     type: 'line',
