@@ -17,6 +17,7 @@ export default defineConfig({
             autoImport: true
         })
     ],
+    base: process.env.BASE_PATH,
     define: { 'process.env': {} },
     resolve: {
         alias: {
