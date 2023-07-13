@@ -10,8 +10,8 @@
 <script setup lang="ts">
 import MobileLayout from '@/layouts/MobileLayout.vue'
 import DesktopLayout from '@/layouts/DesktopLayout.vue'
-import AppBar from '@/components/AppBar.vue'
-import LoadingDialog from '@/components/LoadingDialog.vue'
+import AppBar from '@/components/navigation/AppBar.vue'
+import LoadingDialog from '@/components/dialogs/LoadingDialog.vue'
 import { useEventsStore } from '@/store'
 import { onBeforeMount } from 'vue'
 import { useDisplay } from 'vuetify'

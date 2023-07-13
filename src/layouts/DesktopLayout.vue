@@ -37,7 +37,7 @@
 import VResizeDrawer from 'vuetify3-resize-drawer'
 import SearchTab from '@/components/SearchTab.vue'
 import ListTab from '@/components/ListTab.vue'
-import MapTab from '@/components/MapTab.vue'
+import MapTab from '@/components/map/MapTab.vue'
 import { ref, computed } from 'vue'
 import { useDisplay, useTheme } from 'vuetify'
 import { useAppStore } from '@/store'

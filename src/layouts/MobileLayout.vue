@@ -25,10 +25,10 @@
 </template>
 
 <script setup lang="ts">
-import BottomNavigation from '@/components/BottomNavigation.vue'
+import BottomNavigation from '@/components/navigation/BottomNavigation.vue'
 import SearchTab from '@/components/SearchTab.vue'
 import ListTab from '@/components/ListTab.vue'
-import MapTab from '@/components/MapTab.vue'
+import MapTab from '@/components/map/MapTab.vue'
 import { useAppStore } from '@/store'
 
 function onUpdateAciveTab (newValue: string) {
