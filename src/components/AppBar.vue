@@ -15,10 +15,22 @@
         Spinner
       </div>
       <div>
-        <v-btn icon="mdi-refresh" />
         <v-btn
           icon
-          @click="onLocationBtnClick"
+          @click="subscribeToNotifications"
+        >
+          <v-badge
+            :model-value="!hasNotificationPermission"
+            color="red"
+            dot
+            location="top end"
+          >
+            <v-icon icon="mdi-bell" />
+          </v-badge>
+        </v-btn>
+        <v-btn
+          icon
+          @click="mapStore.getUserLocation()"
         >
           <v-badge
             :color="locationBadgeColor"
@@ -46,6 +58,8 @@
 import { useTheme, useDisplay } from 'vuetify'
 import { useMapStore, useAppStore } from '@/store'
 import { computed } from 'vue'
+import { usePermission } from '@vueuse/core'
+import { initMessagingAndRequestNotificationPermission } from '@/firebase'
 
 const mapStore = useMapStore()
 const appStore = useAppStore()
@@ -56,12 +70,15 @@ const hasUserLocation = computed(() => mapStore.hasUserLocation)
 const locationIcon = computed(() => hasUserLocation.value ? 'mdi-map-marker' : 'mdi-map-marker-alert')
 const locationBadgeColor = computed(() => hasUserLocation.value ? 'green' : 'red')
 
+const notificationPermission = usePermission('notifications')
+const hasNotificationPermission = computed(() => notificationPermission.value === 'granted')
+
 const theme = useTheme()
 function toggleTheme () {
     theme.global.name.value = theme.global.current.value.dark ? 'lightTheme' : 'darkTheme'
 }
 
-function onLocationBtnClick () {
-    mapStore.getUserLocation()
+function subscribeToNotifications () {
+    initMessagingAndRequestNotificationPermission()
 }
 </script>
