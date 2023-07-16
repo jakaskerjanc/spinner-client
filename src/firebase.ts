@@ -25,6 +25,7 @@ export async function initMessagingAndRequestNotificationPermission () {
         onMessage(messaging, (payload) => {
             console.log('Message received. ', payload)
         })
+        return token
     } catch (e) {
         console.error(e)
     }

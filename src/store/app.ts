@@ -5,6 +5,7 @@ type State = {
     tab: string
     leftDrawerOpen: boolean
     rightDrawerOpen: boolean
+    isNotificationDialogOpen: boolean
 }
 
 export const useAppStore = defineStore('app', {
@@ -12,7 +13,8 @@ export const useAppStore = defineStore('app', {
         loading: false,
         tab: 'map',
         leftDrawerOpen: true,
-        rightDrawerOpen: true
+        rightDrawerOpen: true,
+        isNotificationDialogOpen: false
     }),
     actions: {
         toggleLeftDrawer () {

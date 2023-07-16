@@ -59,7 +59,6 @@ import { useTheme, useDisplay } from 'vuetify'
 import { useMapStore, useAppStore } from '@/store'
 import { computed } from 'vue'
 import { usePermission } from '@vueuse/core'
-import { initMessagingAndRequestNotificationPermission } from '@/firebase'
 
 const mapStore = useMapStore()
 const appStore = useAppStore()
@@ -79,6 +78,6 @@ function toggleTheme () {
 }
 
 function subscribeToNotifications () {
-    initMessagingAndRequestNotificationPermission()
+    appStore.isNotificationDialogOpen = true
 }
 </script>
