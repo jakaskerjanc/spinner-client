@@ -13,6 +13,7 @@ type State = {
     endDate: string
     isOrderByDistance: boolean
     includeWithoutDescription: boolean
+    count: number | null
 }
 
 export const useSearchStore = defineStore('search', {
@@ -26,7 +27,8 @@ export const useSearchStore = defineStore('search', {
         startDate: DateTime.now().minus({ day: 1 }).toISODate(),
         endDate: DateTime.now().toISODate(),
         isOrderByDistance: false,
-        includeWithoutDescription: false
+        includeWithoutDescription: false,
+        count: null
     }),
     actions: {
         async search () {
@@ -43,7 +45,7 @@ export const useSearchStore = defineStore('search', {
                 distance: this.distance,
                 lat: this.isOrderByDistance && mapStore.effectiveLocation ? mapStore.effectiveLocation.lat : undefined,
                 lon: this.isOrderByDistance && mapStore.effectiveLocation ? mapStore.effectiveLocation.lng : undefined,
-                count: 50,
+                count: this.count,
                 createTimeFrom: this.startDate ? this.startDate : undefined,
                 createTimeTo: this.endDate ? this.endDate : undefined,
                 includeWithoutDescription: this.includeWithoutDescription

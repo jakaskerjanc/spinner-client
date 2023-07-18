@@ -69,6 +69,11 @@
       type="date"
       clearable
     />
+    <v-select
+      v-model="searchStore.count"
+      placeholder="Število rezultatov"
+      :items="countOptions"
+    />
     <v-btn
       color="red"
       @click="searchStore.search"
@@ -88,6 +93,7 @@ const mapStore = useMapStore()
 
 const municipalities = computed(() => eventsStore.municipalities.map(m => { return { title: m.name, value: m.id } }))
 const eventTypes = computed(() => eventsStore.eventTypes.map(m => { return { title: m.name, value: m.id } }))
+const countOptions = [20, 50, 100, 150, 200]
 
 function onOnGoingChange (newValue: any) {
     if (newValue) {
