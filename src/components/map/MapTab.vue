@@ -88,8 +88,7 @@ watch(() => mapStore.selectedEventId, (id) => {
     const event = events.value.find((event) => event.id === id)
     if (event && map.value !== null) {
         map.value.flyTo({
-            center: [event.lon, event.lat],
-            zoom: 11
+            center: [event.lon, event.lat]
         })
     }
 })
