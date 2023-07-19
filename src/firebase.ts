@@ -1,6 +1,7 @@
 
 import { FirebaseApp, initializeApp } from 'firebase/app'
 import { getMessaging, getToken, onMessage } from 'firebase/messaging'
+import { useNotificationsStore } from './store'
 
 let firebaseApp: FirebaseApp
 
@@ -22,6 +23,8 @@ export async function initMessagingAndRequestNotificationPermission () {
     try {
         const token = await getToken(messaging, { vapidKey: import.meta.env.VITE_VAPID_KEY, serviceWorkerRegistration })
         console.log(token)
+        useNotificationsStore().fcmToken = token
+
         onMessage(messaging, (payload) => {
             console.log('Message received. ', payload)
         })

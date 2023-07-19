@@ -14,23 +14,23 @@
       </v-card-title>
       <v-card-text>
         <v-autocomplete
-          v-model="selectedMunicipalityIds"
+          v-model="notificationStore.selectedMunicipalityIds"
           clearable
           label="Občina"
           :items="municipalities"
-          :disabled="subToAllEvents"
+          :disabled="notificationStore.subscribeToAll"
           multiple
         />
         <v-autocomplete
-          v-model="selectedEventTypeIds"
+          v-model="notificationStore.selectedEventTypeIds"
           clearable
           label="Tip dogodka"
           :items="eventTypes"
-          :disabled="subToAllEvents"
+          :disabled="notificationStore.subscribeToAll"
           multiple
         />
         <v-checkbox
-          v-model="subToAllEvents"
+          v-model="notificationStore.subscribeToAll"
           label="Obveščaj me o vseh dogodkih"
         />
       </v-card-text>
@@ -39,14 +39,7 @@
         <v-btn
           color="blue-darken-1"
           variant="text"
-          @click="onCloseButtonClick"
-        >
-          Zapri
-        </v-btn>
-        <v-btn
-          color="blue-darken-1"
-          variant="text"
-          :loading="isLoading"
+          :loading="notificationStore.loading"
           @click="onSaveButtonClick"
         >
           Shrani
@@ -57,60 +50,29 @@
 </template>
 
 <script setup lang="ts">
-import axios from '@/axios'
 import { initMessagingAndRequestNotificationPermission } from '@/firebase'
-import { useAppStore, useEventsStore } from '@/store'
-import { computed, ref } from 'vue'
+import { useAppStore, useEventsStore, useNotificationsStore } from '@/store'
+import { computed, onMounted } from 'vue'
 
 const appStore = useAppStore()
 const eventsStore = useEventsStore()
+const notificationStore = useNotificationsStore()
 
-const municipalities = computed(() => eventsStore.municipalities.map(m => { return { title: m.name, value: m.id } }))
-const eventTypes = computed(() => eventsStore.eventTypes.map(m => { return { title: m.name, value: m.id } }))
-
-const isLoading = ref(false)
-const nothingSelected = computed(() => !subToAllEvents.value && selectedMunicipalityIds.value.length === 0 && selectedEventTypeIds.value.length === 0)
-
-const subToAllEvents = ref(false)
-const selectedMunicipalityIds = ref([])
-const selectedEventTypeIds = ref([])
+const municipalities = computed(() => eventsStore.municipalitiesByTitleAndValue)
+const eventTypes = computed(() => eventsStore.eventTypesByTitleAndValue)
 
 defineProps({
     isOpen: Boolean
 })
 defineEmits(['update:isOpen'])
 
-function onCloseButtonClick () {
-    appStore.isNotificationDialogOpen = false
-}
+onMounted(async () => {
+    await initMessagingAndRequestNotificationPermission()
+    await notificationStore.loadSubscriptions()
+})
 
 async function onSaveButtonClick () {
-    if (nothingSelected.value) {
-        appStore.isNotificationDialogOpen = false
-        return
-    }
-    const fcmToken = await initMessagingAndRequestNotificationPermission()
-    if (!fcmToken) {
-        appStore.isNotificationDialogOpen = false
-        return
-    }
-
-    await subscribeToNotifications(fcmToken)
+    await notificationStore.subscribeToNotifications()
     appStore.isNotificationDialogOpen = false
-}
-
-async function subscribeToNotifications (fcmToken: string) {
-    try {
-        isLoading.value = true
-        await axios.post('/subscribeToNotifications', {
-            gcmToken: fcmToken,
-            eventTypeIds: subToAllEvents.value ? [] : selectedEventTypeIds.value,
-            municipalityIds: subToAllEvents.value ? [] : selectedMunicipalityIds.value
-        })
-    } catch (e) {
-        console.error(e)
-    } finally {
-        isLoading.value = false
-    }
 }
 </script>

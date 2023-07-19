@@ -15,6 +15,10 @@ export const useEventsStore = defineStore('events', {
         eventTypes: [],
         events: []
     }),
+    getters: {
+        municipalitiesByTitleAndValue: (state) => state.municipalities.map(m => { return { title: m.name, value: m.id } }),
+        eventTypesByTitleAndValue: (state) => state.eventTypes.map(m => { return { title: m.name, value: m.id } })
+    },
     actions: {
         async fetchMunicipalities () {
             try {
