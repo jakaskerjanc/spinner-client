@@ -1,19 +1,21 @@
 import { defineStore } from 'pinia'
 import axios from '@/axios'
 import { useAppStore } from '@/store'
-import { Event, EventType, Municipality } from '@/types'
+import { Event, EventType, Municipality, LargeEvent } from '@/types'
 
 type State = {
     municipalities: Municipality[]
     eventTypes: EventType[]
     events: Event[]
+    largeEvents: LargeEvent[]
 }
 
 export const useEventsStore = defineStore('events', {
     state: (): State => ({
         municipalities: [],
         eventTypes: [],
-        events: []
+        events: [],
+        largeEvents: []
     }),
     getters: {
         municipalitiesByTitleAndValue: (state) => state.municipalities.map(m => { return { title: m.name, value: m.id } }),
@@ -41,13 +43,21 @@ export const useEventsStore = defineStore('events', {
                 console.error(error)
             }
         },
+        async fetchLargeEvents (query: any = {}) {
+            try {
+                this.largeEvents = (await axios.get('/largeEventsArchive', { params: query })).data
+            } catch (error) {
+                console.error(error)
+            }
+        },
         async fetchAll () {
             const appStore = useAppStore()
             appStore.loading = true
             await Promise.all([
                 this.fetchMunicipalities(),
                 this.fetchEventTypes(),
-                this.fetchEvents()
+                this.fetchEvents(),
+                this.fetchLargeEvents()
             ])
             appStore.loading = false
         }

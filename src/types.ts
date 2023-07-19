@@ -22,3 +22,10 @@ export type Event = {
     eventType: EventType;
     municipality: Municipality
 }
+
+export type LargeEvent = {
+    id: number;
+    description: string | null;
+    createTime: string;
+    municipality: Municipality
+}

@@ -46,6 +46,11 @@
         :options="lineStyle"
       />
     </template>
+    <LargeEventIcon
+      v-for="largeEvent in largeEvents"
+      :key="largeEvent.id"
+      :large-event="largeEvent"
+    />
   </MapboxMap>
   <event-popup v-if="renderEventPopup" />
 </template>
@@ -59,6 +64,7 @@ import { computed, ref, watch } from 'vue'
 import { useAppStore, useEventsStore, useMapStore, useSearchStore } from '@/store'
 import MapIcon from '@/components/map/MapIcon.vue'
 import EventPopup from '@/components/map/EventPopup.vue'
+import LargeEventIcon from '@/components/map/LargeEventIcon.vue'
 import turfCircle from '@turf/circle'
 import { lineString as turfLineString } from '@turf/helpers'
 import { Map } from 'mapbox-gl'
@@ -78,6 +84,7 @@ const mapStore = useMapStore()
 const appStore = useAppStore()
 
 const events = computed(() => eventsStore.events)
+const largeEvents = computed(() => eventsStore.largeEvents)
 
 const renderEventPopup = computed(() => !mobile.value || appStore.tab === 'map')
 

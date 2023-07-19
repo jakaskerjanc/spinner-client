@@ -6,6 +6,7 @@ type State = {
     isInSelectMode: boolean
     selectedLocation: null | { lat: number, lng: number }
     selectedEventId: null | number
+    selectedLargeEventId: null | number
 }
 
 export const useMapStore = defineStore('map', {
@@ -14,7 +15,8 @@ export const useMapStore = defineStore('map', {
         getUserLocationCb: null,
         isInSelectMode: false,
         selectedLocation: null,
-        selectedEventId: null
+        selectedEventId: null,
+        selectedLargeEventId: null
     }),
     getters: {
         hasUserLocation: (state) => state.userLocation !== null,
