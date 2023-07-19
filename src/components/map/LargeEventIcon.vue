@@ -4,7 +4,12 @@
     :options="municipalityBorder"
   />
   <MapboxLayer
-    :id="layerId"
+    :id="fillLayerId"
+    :options="municipalityFillStyle"
+    @mb-click="onClick"
+  />
+  <MapboxLayer
+    :id="borderLayerId"
     :options="municipalityBorderStyle"
     @mb-click="onClick"
   />
@@ -28,7 +33,8 @@ const { largeEvent } = toRefs(props)
 const mapStore = useMapStore()
 
 const sourceId = computed(() => `municipalityBorder-${largeEvent.value.id}`)
-const layerId = computed(() => `municipalityBorderLayer-${largeEvent.value.id}`)
+const fillLayerId = computed(() => `municipality-fill-layer-${largeEvent.value.id}`)
+const borderLayerId = computed(() => `municipality-border-layer-${largeEvent.value.id}`)
 
 const geoJson = ref(null)
 onMounted(async () => {
@@ -50,17 +56,26 @@ const municipalityBorder = computed(() => {
     }
 })
 
-const municipalityBorderStyle = computed(() => ({
+const municipalityFillStyle = computed(() => ({
     id: 'layerId',
     source: sourceId.value,
     type: 'fill',
     paint: {
         'fill-color': '#00ff62',
-        'fill-opacity': 0.25,
-        'fill-outline-color': 'blue'
+        'fill-opacity': 0.25
     }
-})
-)
+}))
+
+const municipalityBorderStyle = computed(() => ({
+    id: 'layerId',
+    source: sourceId.value,
+    type: 'line',
+    paint: {
+        'line-color': '#00FF62',
+        'line-opacity': 0.5,
+        'line-width': 1
+    }
+}))
 
 function onClick () {
     mapStore.selectedLargeEventId = largeEvent.value.id
