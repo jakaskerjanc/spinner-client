@@ -9,6 +9,13 @@
     @mb-click="onClick"
   />
   <MapboxLayer
+    v-if="isSelected"
+    :id="borderLayerId"
+    :options="municipalityBorderStyleSelected"
+    @mb-click="onClick"
+  />
+  <MapboxLayer
+    v-else
     :id="borderLayerId"
     :options="municipalityBorderStyle"
     @mb-click="onClick"
@@ -18,17 +25,18 @@
 <script setup lang="ts">
 // @ts-ignore-next-line
 import { MapboxLayer, MapboxSource } from '@studiometa/vue-mapbox-gl'
-import { computed, toRefs, onMounted, ref } from 'vue'
+import { computed, toRefs, onMounted, ref, getCurrentInstance, watch } from 'vue'
 import type { PropType } from 'vue'
 import { useMapStore } from '@/store'
 import { LargeEvent } from '@/types'
 import axios from '@/axios'
 
 const props = defineProps({
-    largeEvent: { type: Object as PropType<LargeEvent>, required: true }
+    largeEvent: { type: Object as PropType<LargeEvent>, required: true },
+    isSelected: { type: Boolean, default: false }
 })
 
-const { largeEvent } = toRefs(props)
+const { largeEvent, isSelected } = toRefs(props)
 
 const mapStore = useMapStore()
 
@@ -44,6 +52,13 @@ onMounted(async () => {
         }
     })).data
     geoJson.value = response[0].outlinePolygon
+})
+
+watch(isSelected, () => {
+    console.log('isSelected changed')
+    const instance = getCurrentInstance()
+    console.log(instance)
+    instance?.proxy?.$forceUpdate()
 })
 
 const municipalityBorder = computed(() => {
@@ -77,7 +92,18 @@ const municipalityBorderStyle = computed(() => ({
     }
 }))
 
+const municipalityBorderStyleSelected = computed(() => ({
+    id: 'layerId',
+    source: sourceId.value,
+    type: 'line',
+    paint: {
+        'line-color': '#00FF62',
+        'line-opacity': 0.5,
+        'line-width': 3.5
+    }
+}))
+
 function onClick () {
-    mapStore.selectedLargeEventId = largeEvent.value.id
+    mapStore.setSelectedLargeEventId(largeEvent.value.id)
 }
 </script>

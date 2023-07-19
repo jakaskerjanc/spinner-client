@@ -10,8 +10,8 @@
     offset="50px"
   >
     <event-card
-      v-if="selectedEvent"
-      :event="selectedEvent"
+      v-if="effectivelySelectedEvent"
+      :event="effectivelySelectedEvent"
       @click="closeEventPopup"
     />
   </v-bottom-sheet>
@@ -21,22 +21,16 @@
 import EventCard from '@/components/EventCard.vue'
 import { VBottomSheet } from 'vuetify/labs/VBottomSheet'
 import { computed, ref, watch, nextTick } from 'vue'
-import { useEventsStore, useMapStore } from '@/store'
+import { useMapStore } from '@/store'
 import { useDisplay } from 'vuetify'
 
 const { mobile } = useDisplay()
 const mapStore = useMapStore()
 
 const sheet = ref(true)
-const selectedEventId = computed(() => mapStore.selectedEventId)
+const effectivelySelectedEvent = computed(() => mapStore.effectivelySelectedEvent)
 
-const selectedEvent = computed(() => {
-    if (!selectedEventId.value) return null
-    const events = useEventsStore().events
-    return events.find((event) => event.id === selectedEventId.value)
-})
-
-watch(selectedEventId, async (id) => {
+watch(effectivelySelectedEvent, async (id) => {
     await nextTick()
     if (id) {
         sheet.value = true
@@ -46,6 +40,7 @@ watch(selectedEventId, async (id) => {
 function closeEventPopup () {
     sheet.value = false
     mapStore.setSelectedEventId(null)
+    mapStore.setSelectedLargeEventId(null)
 }
 </script>
 

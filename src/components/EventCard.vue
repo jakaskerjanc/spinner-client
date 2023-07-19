@@ -6,7 +6,7 @@
   >
     <v-card-item>
       <template #title>
-        {{ event.title ?? event.eventType.name }}
+        {{ title }}
       </template>
       <template #subtitle>
         {{ getFormatedDateTime(event.createTime) }}
@@ -18,7 +18,7 @@
         <v-icon
           color="red"
           size="x-large"
-          :icon="getIconName(event.eventType.id)"
+          :icon="iconName"
         />
       </template>
     </v-card-item>
@@ -29,15 +29,22 @@
 </template>
 
 <script setup lang="ts">
-import { Event } from '@/types'
+import { Event, LargeEvent } from '@/types'
 import { getIconName, getFormatedDateTime } from '@/util'
-import { PropType } from 'vue'
+import { PropType, toRefs, computed } from 'vue'
 
-defineProps({
+type EventProp = Event | LargeEvent & { lat?: never }
+
+const props = defineProps({
     event: {
-        type: Object as PropType<Event>,
+        type: Object as PropType<EventProp>,
         required: true
     }
 })
 const emit = defineEmits(['click'])
+
+const { event } = toRefs(props)
+
+const title = computed(() => typeof event.value.lat !== 'number' ? 'Večji dogodek' : event.value.title ?? event.value.eventType.name)
+const iconName = computed(() => typeof event.value.lat !== 'number' ? 'mdi-map-marker-multiple' : getIconName(event.value.eventType.id))
 </script>

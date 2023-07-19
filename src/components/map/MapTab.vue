@@ -50,6 +50,7 @@
       v-for="largeEvent in largeEvents"
       :key="largeEvent.id"
       :large-event="largeEvent"
+      :is-selected="largeEvent.id === mapStore.selectedLargeEventId"
     />
   </MapboxMap>
   <event-popup v-if="renderEventPopup" />

@@ -1,4 +1,6 @@
 import { defineStore } from 'pinia'
+import { useEventsStore } from './events'
+import { Event, LargeEvent } from '@/types'
 
 type State = {
     userLocation: null | { lat: number, lng: number }
@@ -25,6 +27,17 @@ export const useMapStore = defineStore('map', {
         effectiveLocationAsArray (): [number, number] | null {
             const location = this.effectiveLocation
             return location ? [location.lng, location.lat] : null
+        },
+        selectedEvent (state) {
+            const eventsStore = useEventsStore()
+            return eventsStore.events.find((event) => event.id === state.selectedEventId)
+        },
+        selectedLargeEvent (state) {
+            const eventsStore = useEventsStore()
+            return eventsStore.largeEvents.find((event) => event.id === state.selectedLargeEventId)
+        },
+        effectivelySelectedEvent (): Event | LargeEvent | undefined {
+            return this.selectedLargeEventId ? this.selectedLargeEvent : this.selectedEvent
         }
     },
     actions: {
@@ -34,7 +47,12 @@ export const useMapStore = defineStore('map', {
             }
         },
         setSelectedEventId (eventId: number | null) {
+            this.selectedLargeEventId = null
             this.selectedEventId = eventId
+        },
+        setSelectedLargeEventId (eventId: number | null) {
+            this.selectedEventId = null
+            this.selectedLargeEventId = eventId
         }
     }
 })

@@ -4,6 +4,12 @@
     class="h-100 pa-4"
   >
     <event-card
+      v-for="largeEvent in largeEvents"
+      :key="largeEvent.id"
+      :event="largeEvent"
+      @click="useMapStore().setSelectedLargeEventId(largeEvent.id)"
+    />
+    <event-card
       v-for="event in events"
       :key="event.id"
       :event="event"
@@ -24,4 +30,5 @@ import { computed } from 'vue'
 import EventCard from '@/components/EventCard.vue'
 
 const events = computed(() => useEventsStore().events)
+const largeEvents = computed(() => useEventsStore().largeEvents)
 </script>
