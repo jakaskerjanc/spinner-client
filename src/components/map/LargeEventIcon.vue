@@ -25,7 +25,7 @@
 <script setup lang="ts">
 // @ts-ignore-next-line
 import { MapboxLayer, MapboxSource } from '@studiometa/vue-mapbox-gl'
-import { computed, toRefs, onMounted, ref, getCurrentInstance, watch } from 'vue'
+import { computed, toRefs, onMounted, ref } from 'vue'
 import type { PropType } from 'vue'
 import { useMapStore } from '@/store'
 import { LargeEvent } from '@/types'
