@@ -54,13 +54,6 @@ onMounted(async () => {
     geoJson.value = response[0].outlinePolygon
 })
 
-watch(isSelected, () => {
-    console.log('isSelected changed')
-    const instance = getCurrentInstance()
-    console.log(instance)
-    instance?.proxy?.$forceUpdate()
-})
-
 const municipalityBorder = computed(() => {
     return {
         type: 'geojson',
