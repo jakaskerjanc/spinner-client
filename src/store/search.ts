@@ -14,6 +14,7 @@ type State = {
     isOrderByDistance: boolean
     includeWithoutDescription: boolean
     count: number | null
+    includeLargeEvents: boolean
 }
 
 export const useSearchStore = defineStore('search', {
@@ -28,7 +29,8 @@ export const useSearchStore = defineStore('search', {
         endDate: DateTime.now().toISODate(),
         isOrderByDistance: false,
         includeWithoutDescription: false,
-        count: null
+        count: null,
+        includeLargeEvents: false
     }),
     actions: {
         async search () {
@@ -52,7 +54,15 @@ export const useSearchStore = defineStore('search', {
             }
 
             useAppStore().loading = true
-            await eventsStore.fetchEvents(query)
+            if (this.includeLargeEvents) {
+                await Promise.all([
+                    eventsStore.fetchEvents(query),
+                    eventsStore.fetchLargeEvents(query)
+                ])
+            } else {
+                await eventsStore.fetchEvents(query)
+                eventsStore.largeEvents = []
+            }
             useAppStore().loading = false
         }
     }

@@ -26,6 +26,12 @@
     />
     <div class="switch-container">
       <v-switch
+        :model-value="searchStore.includeLargeEvents"
+        label="Večji dogodki"
+        hide-details
+        @update:model-value="onIncludeLargeEventsChange"
+      />
+      <v-switch
         :model-value="searchStore.includeOnGoing"
         label="V trajanju"
         hide-details
@@ -105,8 +111,16 @@ function onOnGoingChange (newValue: any) {
 function onOrderByDistanceChange (newValue: any) {
     if (newValue) {
         mapStore.getUserLocation()
+        searchStore.includeLargeEvents = false
     }
     searchStore.isOrderByDistance = newValue
+}
+
+function onIncludeLargeEventsChange (newValue: any) {
+    if (newValue) {
+        searchStore.isOrderByDistance = false
+    }
+    searchStore.includeLargeEvents = newValue
 }
 
 function enterMapSelectMode () {
