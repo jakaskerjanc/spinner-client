@@ -60,7 +60,7 @@
 // @ts-ignore-next-line
 import { MapboxMap, MapboxGeolocateControl, MapboxNavigationControl, MapboxMarker, MapboxLayer, MapboxSource } from '@studiometa/vue-mapbox-gl'
 import 'mapbox-gl/dist/mapbox-gl.css'
-import { useTheme, useDisplay } from 'vuetify'
+import { useDisplay } from 'vuetify'
 import { computed, ref, watch } from 'vue'
 import { useAppStore, useEventsStore, useMapStore, useSearchStore } from '@/store'
 import MapIcon from '@/components/map/MapIcon.vue'
@@ -72,12 +72,11 @@ import { Map } from 'mapbox-gl'
 
 const accessToken = import.meta.env.VITE_MAPBOX_KEY
 
-const theme = useTheme()
 const { mobile } = useDisplay()
 
 const mapStyleLight = 'mapbox://styles/mapbox/streets-v11'
 const mapStyleDark = 'mapbox://styles/mapbox/dark-v11'
-const mapStyle = computed(() => theme.current.value.dark === true ? mapStyleDark : mapStyleLight)
+const mapStyle = computed(() => appStore.persistentSettings.theme === 'darkTheme' ? mapStyleDark : mapStyleLight)
 
 const searchStore = useSearchStore()
 const eventsStore = useEventsStore()
@@ -87,7 +86,7 @@ const appStore = useAppStore()
 const events = computed(() => eventsStore.events)
 const largeEvents = computed(() => eventsStore.largeEvents)
 
-const renderEventPopup = computed(() => !mobile.value || appStore.tab === 'map')
+const renderEventPopup = computed(() => !mobile.value || appStore.persistentSettings.tab === 'map')
 
 const mapCenter = ref([14.8, 46.15])
 

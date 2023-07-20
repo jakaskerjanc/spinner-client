@@ -125,7 +125,7 @@ function onIncludeLargeEventsChange (newValue: any) {
 
 function enterMapSelectMode () {
     mapStore.isInSelectMode = true
-    useAppStore().tab = 'map'
+    useAppStore().persistentSettings.tab = 'map'
 }
 </script>
 

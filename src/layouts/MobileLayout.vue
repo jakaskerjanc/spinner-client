@@ -1,7 +1,7 @@
 <template>
   <v-main>
     <v-window
-      :model-value="useAppStore().tab"
+      :model-value="useAppStore().persistentSettings.tab"
       height="100%"
     >
       <v-window-item
@@ -19,7 +19,7 @@
     </v-window>
   </v-main>
   <bottom-navigation
-    v-model:active-tab="useAppStore().tab"
+    v-model:active-tab="useAppStore().persistentSettings.tab"
     @update:model-value="onUpdateAciveTab"
   />
 </template>
@@ -32,7 +32,7 @@ import MapTab from '@/components/map/MapTab.vue'
 import { useAppStore } from '@/store'
 
 function onUpdateAciveTab (newValue: string) {
-    useAppStore().tab = newValue
+    useAppStore().persistentSettings.tab = newValue
 }
 </script>
 

@@ -42,7 +42,7 @@
         </v-btn>
         <v-btn
           icon="mdi-theme-light-dark"
-          @click="toggleTheme"
+          @click="appStore.toggleTheme"
         />
         <v-btn
           v-if="showDrawerToggle"
@@ -55,7 +55,7 @@
 </template>
 
 <script setup lang="ts">
-import { useTheme, useDisplay } from 'vuetify'
+import { useDisplay } from 'vuetify'
 import { useMapStore, useAppStore } from '@/store'
 import { computed } from 'vue'
 import { usePermission } from '@vueuse/core'
@@ -71,11 +71,6 @@ const locationBadgeColor = computed(() => hasUserLocation.value ? 'green' : 'red
 
 const notificationPermission = usePermission('notifications')
 const hasNotificationPermission = computed(() => notificationPermission.value === 'granted')
-
-const theme = useTheme()
-function toggleTheme () {
-    theme.global.name.value = theme.global.current.value.dark ? 'lightTheme' : 'darkTheme'
-}
 
 function subscribeToNotifications () {
     appStore.isNotificationDialogOpen = true

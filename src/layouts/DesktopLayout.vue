@@ -39,15 +39,15 @@ import SearchTab from '@/components/SearchTab.vue'
 import ListTab from '@/components/ListTab.vue'
 import MapTab from '@/components/map/MapTab.vue'
 import { ref, computed } from 'vue'
-import { useDisplay, useTheme } from 'vuetify'
+import { useDisplay } from 'vuetify'
 import { useAppStore } from '@/store'
 
 const appStore = useAppStore()
 
-const currentTheme = computed(() => useTheme().current.value.dark === true ? 'darkTheme' : 'lightTheme')
+const currentTheme = computed(() => appStore.persistentSettings.theme)
 
-const leftDrawerOpen = computed(() => appStore.leftDrawerOpen)
-const rightDrawerOpen = computed(() => appStore.rightDrawerOpen)
+const leftDrawerOpen = computed(() => appStore.persistentSettings.leftDrawerOpen)
+const rightDrawerOpen = computed(() => appStore.persistentSettings.rightDrawerOpen)
 const leftDrawerOffset = ref('300px')
 const rightDrawerOffset = ref('300px')
 const drawerOptions = ref({
